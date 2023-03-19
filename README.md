@@ -63,11 +63,30 @@ developing your own process.
 - Add a new toy when the toy form is submitted
 
   - How I debugged:
+  1. I got error 500 and I looked at the server side.
+  2. I got "NameError (uninitialized constant     ToysController::Toys):"
+  3. I checked the create action and found out the it was like this 
+    def create
+      toy = Toys.create(toy_params)
+      render json: toy, status: :created
+    end
+  4. I corrected the create action to 
+  def create
+    toy = Toy.create(toy_params)
+    render json: toy, status: :created
+  end
 
 - Update the number of likes for a toy
 
   - How I debugged:
+1. While liking the toy, an error of   `Uncaught (in promise) SyntaxError: Unexpected end of JSON input was displayed.
+2. Confirming the update method in the controllers,  I realized that what was being returned is `toy.update(toy_params)` which is not a valid JSON response.
+3. I added the render method and changed it to `render json: toy.update(toy_params)`
+
 
 - Donate a toy to Goodwill (and delete it from our database)
 
   - How I debugged:
+1. On clicking the 'donate a toy to goodwill' button, I got 404 error.
+2. Checking the controllers, the delete action was defined  but the route was not defined in the route file. 
+3. Therefore, I added the destroy route to the resources.ie `resources :toys, only: [:index, :create, :update, :destroy]`
